@@ -14,7 +14,14 @@ if (registrationForm) {
         const email = document.querySelector('input[name="email"]').value.trim();
         const department = document.querySelector('input[name="department"]').value.trim();
         const phone = document.querySelector('input[name="phone"]').value.trim();
-        const selectedEvent = document.querySelector('input[name="event"]:checked').value;
+        const selectedEventInput = document.querySelector('input[name="event"]:checked');
+
+if (!selectedEventInput) {
+    alert("Please select an event.");
+    return;
+}
+
+const selectedEvent = selectedEventInput.value;
 
         const registrationData = new URLSearchParams();
 
