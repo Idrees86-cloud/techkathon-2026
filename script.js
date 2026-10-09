@@ -10,31 +10,77 @@ if (registrationForm) {
 
         event.preventDefault();
 
-        const registerCard = document.querySelector(".register-card");
+        const name = document.querySelector('input[name="name"]').value.trim();
+        const email = document.querySelector('input[name="email"]').value.trim();
+        const department = document.querySelector('input[name="department"]').value.trim();
+        const phone = document.querySelector('input[name="phone"]').value.trim();
+        const selectedEvent = document.querySelector('input[name="event"]:checked').value;
 
-        registerCard.innerHTML = `
-            <div class="success-message">
+        const registrationData = new URLSearchParams();
 
-                <div class="success-icon">
-                    🎉
+        registrationData.append("name", name);
+        registrationData.append("email", email);
+        registrationData.append("dept", department);
+        registrationData.append("phone", phone);
+        registrationData.append("event", selectedEvent);
+
+        const submitButton = registrationForm.querySelector("button[type='submit']");
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Registering... ⏳";
+
+        fetch("https://script.google.com/macros/s/AKfycbyIDzr-jM_7LZqS2-A6FUR8LxfedYu6wF260HB6RQduaftulj0Pen2Nfx3CvaBJaSoa/exec", {
+            method: "POST",
+            body: registrationData
+        })
+        .then(function(response) {
+
+            if (!response.ok) {
+                throw new Error("Server error: " + response.status);
+            }
+
+            return response.text();
+
+        })
+        .then(function() {
+
+            const registerCard = document.querySelector(".register-card");
+
+            registerCard.innerHTML = `
+                <div class="success-message">
+
+                    <div class="success-icon">
+                        🎉
+                    </div>
+
+                    <h2>Registration Successful!</h2>
+
+                    <p>
+                        You are officially registered for TECHKATHON 2026.
+                    </p>
+
+                    <p>
+                        🚀 Get ready to innovate, compete and create!
+                    </p>
+
+                    <a href="index.html">
+                        ← Back to Home
+                    </a>
+
                 </div>
+            `;
 
-                <h2>Registration Successful!</h2>
+        })
+        .catch(function(error) {
 
-                <p>
-                    You are officially registered for TECHKATHON 2026.
-                </p>
+            console.error("Registration error:", error);
 
-                <p>
-                    🚀 Get ready to innovate, compete and create!
-                </p>
+            submitButton.disabled = false;
+            submitButton.textContent = "Register for TECHKATHON →";
 
-                <a href="index.html">
-                    ← Back to Home
-                </a>
+            alert("Registration failed. Please try again.");
 
-            </div>
-        `;
+        });
 
     });
 
