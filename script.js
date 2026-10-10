@@ -168,31 +168,74 @@ if (contactForm) {
 
         event.preventDefault();
 
-        const contactBox = document.querySelector(".contact-form");
+        const name = contactForm.querySelector('input[name="name"]').value.trim();
+        const email = contactForm.querySelector('input[name="email"]').value.trim();
+        const message = contactForm.querySelector('textarea[name="message"]').value.trim();
 
-        contactBox.innerHTML = `
-            <div class="contact-success">
+        const contactData = new URLSearchParams();
 
-                <div class="contact-success-icon">
-                    📡
+        contactData.append("type", "contact");
+        contactData.append("name", name);
+        contactData.append("email", email);
+        contactData.append("message", message);
+
+        const submitButton = contactForm.querySelector("button[type='submit']");
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Sending... ⏳";
+
+        fetch("https://script.google.com/macros/s/AKfycbyIDzr-jM_7LZqS2-A6FUR8LxfedYu6wF260HB6RQduaftulj0Pen2Nfx3CvaBJaSoa/exec", {
+            method: "POST",
+            body: contactData
+        })
+        .then(function(response) {
+
+            if (!response.ok) {
+                throw new Error("Server error: " + response.status);
+            }
+
+            return response.text();
+
+        })
+        .then(function() {
+
+            const contactBox = document.querySelector(".contact-form");
+
+            contactBox.innerHTML = `
+                <div class="contact-success">
+
+                    <div class="contact-success-icon">
+                        📡
+                    </div>
+
+                    <h3>Message Sent!</h3>
+
+                    <p>
+                        Thank you for contacting TECHKATHON 2026.
+                    </p>
+
+                    <p>
+                        Our team will get back to you soon. 🚀
+                    </p>
+
+                    <button onclick="location.reload()">
+                        Send Another Message →
+                    </button>
+
                 </div>
+            `;
 
-                <h3>Message Sent!</h3>
+        })
+        .catch(function(error) {
 
-                <p>
-                    Thank you for contacting TECHKATHON 2026.
-                </p>
+            console.error("Contact form error:", error);
 
-                <p>
-                    Our team will get back to you soon. 🚀
-                </p>
+            submitButton.disabled = false;
+            submitButton.textContent = "Send Message →";
 
-                <button onclick="location.reload()">
-                    Send Another Message →
-                </button>
+            alert("Message could not be sent. Please try again.");
 
-            </div>
-        `;
+        });
 
     });
 
